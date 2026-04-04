@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buyurtma Formasi - Multi Language</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body {
+    margin:0;
+    font-family: 'Orbitron', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    color:#fff;
+}
+body::before{
+    content:'';
+    position:absolute;
+    top:-50%; left:-50%;
+    width:200%; height:200%;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size:50px 50px;
+    animation:rotate 30s linear infinite;
+    z-index:0;
+}
+@keyframes rotate{from{transform:rotate(0deg);} to{transform:rotate(360deg);}}
+.container{
+    position:relative; z-index:1;
+    background:rgba(0,0,0,0.85);
+    backdrop-filter:blur(10px);
+    padding:30px 40px;
+    border-radius:20px;
+    box-shadow:0 0 30px rgba(0,255,255,0.5);
+    width:100%; max-width:550px;
+}
+h2{text-align:center;margin-bottom:20px;font-size:28px;color:#0ff;text-shadow:0 0 10px #0ff;}
+label{margin-bottom:5px;font-weight:bold;font-size:14px;color:#0ff;text-shadow:0 0 5px #0ff;}
+input, textarea, select{margin-bottom:15px;padding:12px;border-radius:12px;border:none;background:rgba(255,255,255,0.05);color:#0ff;font-size:16px;outline:none;box-shadow:inset 0 0 5px rgba(0,255,255,0.3);transition:0.3s;}
+input:focus, textarea:focus, select:focus{box-shadow:0 0 10px #0ff,inset 0 0 10px rgba(0,255,255,0.3);}
+button{padding:15px;border:none;border-radius:12px;background:linear-gradient(45deg,#00ffff,#00aaff);color:black;font-size:18px;font-weight:bold;cursor:pointer;transition:0.3s;box-shadow:0 0 10px #0ff;}
+button:hover{background:linear-gradient(45deg,#00aaff,#00ffff);box-shadow:0 0 20px #0ff;}
+.success{background:rgba(0,255,0,0.2);border:1px solid #0f0;color:#0f0;padding:10px;border-radius:10px;margin-top:10px;display:none;text-align:center;}
+</style>
+</head>
+<body>
+<div class="container">
+<h2 id="title">Buyurtma Formasi</h2>
+
+<label for="language">Tilni tanlang / Choose Language</label>
+<select id="language">
+    <option value="uz">Oʻzbekcha</option>
+    <option value="en">English</option>
+    <option value="ru">Русский</option>
+    <option value="tr">Türkçe</option>
+    <option value="fr">Français</option>
+    <option value="de">Deutsch</option>
+    <option value="es">Español</option>
+    <option value="ar">العربية</option>
+    <option value="zh">中文</option>
+    <option value="ja">日本語</option>
+    <option value="ko">한국어</option>
+    <option value="it">Italiano</option>
+</select>
+
+<form id="orderForm">
+<label for="productCode" data-key="productCode">Tovar kodi (# bilan boshlanishi shart)</label>
+<input type="text" id="productCode" placeholder="#12345" required pattern="^#.+">
+
+<label for="color" data-key="color">Rangi</label>
+<input type="text" id="color" placeholder="Qizil, Moviy..." required>
+
+<label for="quantity" data-key="quantity">Soni</label>
+<input type="number" id="quantity" min="1" value="1" required>
+
+<label for="size" data-key="size">Razmeri</label>
+<input type="text" id="size" placeholder="Mijoz o'zi yozadi (harf va raqam)" required pattern="^[A-Za-z0-9]+$" title="Faqat harf va raqam yozing">
+
+<label for="name" data-key="name">Ism va Familiya</label>
+<input type="text" id="name" placeholder="Javlonbek Omonov" required>
+
+<label for="phone" data-key="phone">Telefon</label>
+<input type="tel" id="phone" placeholder="+998901234567" required pattern="\+998[0-9]{9}">
+
+<label for="email" data-key="email">Email</label>
+<input type="email" id="email" placeholder="example@mail.com" required>
+
+<label for="address" data-key="address">Manzil</label>
+<textarea id="address" placeholder="Toshkent, Shayxontohur..." rows="3" required></textarea>
+
+<label for="productImage" data-key="productImage">Tovar rasmi (rasm yuklang)</label>
+<input type="file" id="productImage" accept="image/*" required>
+
+<label><input type="checkbox" id="terms" required> <span data-key="terms">Shartnoma shartlarini qabul qilaman</span></label>
+
+<button type="submit" data-key="submit">Buyurtma berish</button>
+</form>
+<div class="success" id="successMessage">Buyurtma muvaffaqiyatli yuborildi!</div>
+</div>
+
+<script>
+// Telegram bot
+const TELEGRAM_TOKEN = "8096738475:AAEpARzOs__Qeknja0IU2O6YS9F9vTrw_Fk";
+const CHAT_ID = "8108956117";
+
+// Tarjimalar 12 til
+const translations = {
+    "uz": {title:"Buyurtma Formasi", productCode:"Tovar kodi (# bilan boshlanishi shart)", color:"Rangi", quantity:"Soni", size:"Razmeri", name:"Ism va Familiya", phone:"Telefon", email:"Email", address:"Manzil", productImage:"Tovar rasmi (rasm yuklang)", terms:"Shartnoma shartlarini qabul qilaman", submit:"Buyurtma berish"},
+    "en": {title:"Order Form", productCode:"Product code (start with #)", color:"Color", quantity:"Quantity", size:"Size", name:"Full Name", phone:"Phone", email:"Email", address:"Address", productImage:"Product image (upload)", terms:"I accept the terms", submit:"Place Order"},
+    "ru": {title:"Форма заказа", productCode:"Код товара (# в начале)", color:"Цвет", quantity:"Количество", size:"Размер", name:"ФИО", phone:"Телефон", email:"Email", address:"Адрес", productImage:"Фото товара (загрузить)", terms:"Я принимаю условия", submit:"Сделать заказ"},
+    "tr": {title:"Sipariş Formu", productCode:"Ürün kodu (# ile başlamalı)", color:"Renk", quantity:"Adet", size:"Beden", name:"Ad Soyad", phone:"Telefon", email:"Email", address:"Adres", productImage:"Ürün resmi (yükle)", terms:"Şartları kabul ediyorum", submit:"Sipariş Ver"},
+    "fr": {title:"Formulaire de commande", productCode:"Code produit (commence par #)", color:"Couleur", quantity:"Quantité", size:"Taille", name:"Nom complet", phone:"Téléphone", email:"Email", address:"Adresse", productImage:"Image du produit (télécharger)", terms:"J'accepte les conditions", submit:"Passer commande"},
+    "de": {title:"Bestellformular", productCode:"Produktcode (# am Anfang)", color:"Farbe", quantity:"Menge", size:"Größe", name:"Name", phone:"Telefon", email:"Email", address:"Adresse", productImage:"Produktbild (hochladen)", terms:"Ich akzeptiere die Bedingungen", submit:"Bestellen"},
+    "es": {title:"Formulario de pedido", productCode:"Código del producto (empieza con #)", color:"Color", quantity:"Cantidad", size:"Tamaño", name:"Nombre completo", phone:"Teléfono", email:"Email", address:"Dirección", productImage:"Imagen del producto (subir)", terms:"Acepto los términos", submit:"Realizar pedido"},
+    "ar": {title:"نموذج الطلب", productCode:"رمز المنتج (# في البداية)", color:"اللون", quantity:"الكمية", size:"المقاس", name:"الاسم الكامل", phone:"الهاتف", email:"البريد الإلكتروني", address:"العنوان", productImage:"صورة المنتج (تحميل)", terms:"أوافق على الشروط", submit:"إرسال الطلب"},
+    "zh": {title:"订单表单", productCode:"产品代码（以#开头）", color:"颜色", quantity:"数量", size:"尺码", name:"全名", phone:"电话", email:"电子邮件", address:"地址", productImage:"产品图片（上传）", terms:"我接受条款", submit:"下订单"},
+    "ja": {title:"注文フォーム", productCode:"商品コード（#で始まる）", color:"色", quantity:"数量", size:"サイズ", name:"氏名", phone:"電話", email:"メール", address:"住所", productImage:"商品画像（アップロード）", terms:"利用規約に同意します", submit:"注文する"},
+    "ko": {title:"주문 양식", productCode:"제품 코드 (#로 시작)", color:"색상", quantity:"수량", size:"사이즈", name:"성명", phone:"전화", email:"이메일", address:"주소", productImage:"제품 이미지 (업로드)", terms:"약관에 동의합니다", submit:"주문하기"},
+    "it": {title:"Modulo ordine", productCode:"Codice prodotto (inizia con #)", color:"Colore", quantity:"Quantità", size:"Taglia", name:"Nome completo", phone:"Telefono", email:"Email", address:"Indirizzo", productImage:"Immagine prodotto (carica)", terms:"Accetto i termini", submit:"Ordina"}
+};
+
+// Tilni o'zgartirish
+document.getElementById('language').addEventListener('change', function(){
+    const lang = this.value;
+    document.getElementById('title').textContent = translations[lang].title;
+    document.querySelectorAll('[data-key]').forEach(el=>{
+        const key = el.getAttribute('data-key');
+        if(translations[lang][key]) el.textContent = translations[lang][key];
+    });
+});
+
+// Form submit + Telegram
+document.getElementById('orderForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const sizeInput = document.getElementById('size');
+    if(!/^[A-Za-z0-9]+$/.test(sizeInput.value)){
+        alert("Razmer faqat harf va raqamdan iborat bo‘lishi kerak!");
+        return;
+    }
+
+    const order={
+        productCode:document.getElementById('productCode').value,
+        color:document.getElementById('color').value,
+        quantity:document.getElementById('quantity').value,
+        size:sizeInput.value,
+        customer:{
+            name:document.getElementById('name').value,
+            phone:document.getElementById('phone').value,
+            email:document.getElementById('email').value,
+            address:document.getElementById('address').value
+        }
+    };
+
+    const message=`
+📦 Yangi Buyurtma!
+Tovar kodi: ${order.productCode}
+Rangi: ${order.color}
+Soni: ${order.quantity}
+Razmeri: ${order.size}
+
+👤 Mijoz:
+Ism: ${order.customer.name}
+Telefon: ${order.customer.phone}
+Email: ${order.customer.email}
+Manzil: ${order.customer.address}
+`;
+
+    const fileInput=document.getElementById('productImage');
+    const formData=new FormData();
+    formData.append('chat_id',CHAT_ID);
+    formData.append('photo',fileInput.files[0]);
+    formData.append('caption',message);
+
+    fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`,{method:"POST",body:formData})
+    .then(res=>res.json())
+    .then(data=>{console.log(data);document.getElementById('successMessage').style.display='block';this.reset();})
+    .catch(err=>console.error(err));
+});
+</script>
+</body>
+</html>
